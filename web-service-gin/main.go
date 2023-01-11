@@ -7,8 +7,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// album represents data about a record album.
-
 type car struct {
 	ID       string  `json:"id"`
 	CarName  string  `json:"carname"`
@@ -17,18 +15,18 @@ type car struct {
 	Price    float64 `json:"price"`
 }
 
-// albums slice to seed record album data.
-
 var cars = []car{
 	{ID: "1", CarName: "Nissan GT - R", CarType: "Sport", Capacity: "2 People", Price: 56.99},
 	{ID: "2", CarName: "CR  - V", CarType: "SUV", Capacity: "4 People", Price: 17.99},
 	{ID: "3", CarName: "MG ZX Excite", CarType: "Hatchback", Capacity: "4 people", Price: 39.99},
 }
 
-// getAlbums responds with the list of all albums as JSON.
+// get all cars
 func getCars(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, cars)
 }
+
+// add new cars
 func postCars(c *gin.Context) {
 	var newCar car
 	newCar.ID = CreateUUID()
