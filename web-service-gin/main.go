@@ -38,9 +38,9 @@ func postCar(c *gin.Context) {
 	id := uuid.NewV4()
 	newCar.ID = id.String()
 	if err := c.BindJSON(&newCar); err != nil {
-		Cars[id] = newCar
 		return
 	}
+	Cars[id] = newCar
 	c.IndentedJSON(http.StatusCreated, newCar)
 }
 
