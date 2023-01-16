@@ -19,50 +19,27 @@ type Car struct {
 	GasType  string  `json:"gastype" db:"gas_type"`
 }
 
-var Cars map[uuid.UUID]Car
-
-func init() {
-	Cars = make(map[uuid.UUID]Car)
-}
-
-// get all Cars
 func getallCars(c *gin.Context) {
 	db := DBConnect()
 	defer db.Close()
-	cars, err := getCarfromDB()
+	cars, err := getCarsfromDB()
 	if err != nil {
-		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	// fmt.Println(cars)
 	c.IndentedJSON(http.StatusOK, cars)
 }
-
-func getCarfromDB() ([]*Car, error) {
+func getCarsfromDB() ([]*Car, error) {
 	db := DBConnect()
 	cars := make([]*Car, 0)
 	err := db.Select(&cars, `SELECT car_id, car_name, car_type, capacity,price,gas_type FROM carrental.cars`)
 	if err != nil {
 		return nil, err
-
 	}
 	return cars, nil
 
 }
 
-func AddCar(car Car) error {
-	db := DBConnect()
-	fmt.Println(car)
-	query := `INSERT INTO carrental.cars (car_id, car_name, car_type, capacity,price,gas_type) VALUES (:car_id, :car_name, :car_type, :capacity,:price,:gas_type)`
-	_, err := db.NamedExec(query, car)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// add new Cars
 func postCar(c *gin.Context) {
 	var newCar Car
 	db := DBConnect()
@@ -72,53 +49,62 @@ func postCar(c *gin.Context) {
 	if err := c.BindJSON(&newCar); err != nil {
 		return
 	}
-	Cars[id] = newCar
-	err := AddCar(newCar)
+	err := postcarinDB(newCar)
 	if err != nil {
-		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
 	c.IndentedJSON(http.StatusCreated, newCar)
 }
-
+func postcarinDB(car Car) error {
+	db := DBConnect()
+	fmt.Println(car)
+	query := `INSERT INTO carrental.cars (car_id, car_name, car_type, capacity,price,gas_type) VALUES (:car_id, :car_name, :car_type, :capacity,:price,:gas_type)`
+	_, err := db.NamedExec(query, car)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 func getCar(c *gin.Context) {
 	id := c.Param("id")
-	for i, car := range Cars {
-		if car.ID == id {
-			c.IndentedJSON(http.StatusOK, i)
-			return
-		}
+	car, err := getcarfromDB(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "car not found"})
+	c.IndentedJSON(http.StatusOK, car)
 }
-func deletefromDb(id string) error {
+func getcarfromDB(id string) ([]*Car, error) {
 	db := DBConnect()
 	defer db.Close()
-	query := `DELETE FROM carrental.cars WHERE car_id= :car_id`
+	car := make([]*Car, 0)
+	query := `SELECT car_id, car_name, car_type, capacity,price,gas_type FROM carrental.cars WHERE car_id= $1`
+	err := db.Select(&car, query, id)
+	if err != nil {
+		return nil, err
+	}
+	return car, nil
+}
+func deleteCar(c *gin.Context) {
+	i := c.Param("id")
+	err := deletecarfromDB(i)
+	if err != nil {
+		c.JSON(http.StatusOK, err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Car deleted!!"})
+}
+func deletecarfromDB(id string) error {
+	db := DBConnect()
+	defer db.Close()
+	query := `DELETE FROM carrental.cars WHERE car_id=$1`
 	_, err := db.Exec(query, id)
 	if err != nil {
 		return err
 	}
 	fmt.Println("Car Deleted")
 	return nil
-}
-func deleteCar(c *gin.Context) {
-	i := c.Param("id")
-	for car, deletecar := range Cars {
-		if deletecar.ID == i {
-			delete(Cars, car)
-			err := deletefromDb(i)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, err)
-				return
-			}
-			fmt.Println(car)
-			c.JSON(http.StatusOK, gin.H{"message": "Car deleted!!"})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"message": "Car not found"})
-	}
 }
 
 func main() {
