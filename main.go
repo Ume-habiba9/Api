@@ -37,7 +37,6 @@ func getCarsfromDB() ([]*Car, error) {
 		return nil, err
 	}
 	return cars, nil
-
 }
 
 func postCar(c *gin.Context) {
