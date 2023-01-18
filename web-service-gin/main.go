@@ -58,6 +58,7 @@ func postCar(c *gin.Context) {
 }
 func postcarinDB(car Car) error {
 	db := DBConnect()
+	defer db.Close()
 	fmt.Println(car)
 	query := `INSERT INTO carrental.cars (car_id, car_name, car_type, capacity,price,gas_type) VALUES (:car_id, :car_name, :car_type, :capacity,:price,:gas_type)`
 	_, err := db.NamedExec(query, car)
@@ -106,6 +107,31 @@ func deletecarfromDB(id string) error {
 	fmt.Println("Car Deleted")
 	return nil
 }
+func updateCar(c *gin.Context) {
+	id := c.Param("id")
+	var cardata Car
+	if err := c.ShouldBindJSON(&cardata); err != nil {
+		fmt.Println("errr ", err)
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	err := updatecarinDB(id, cardata)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, err)
+	}
+	c.IndentedJSON(http.StatusOK, "Updated Successfully")
+}
+func updatecarinDB(id string, cardata Car) error {
+	db := DBConnect()
+	defer db.Close()
+	query := `UPDATE carrental.cars SET car_id=:car_id,car_name=:car_name,car_type=:car_type,capacity=:capacity,price=:price,gas_type=:gas_type WHERE car_id=$1`
+	_, err := db.NamedExec(query, cardata)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func main() {
 	router := gin.Default()
@@ -113,6 +139,7 @@ func main() {
 	router.POST("/Cars", postCar)
 	router.GET("/Cars/:id", getCar)
 	router.DELETE("/Cars/:id", deleteCar)
+	router.PUT("/Cars/:id", updateCar)
 	router.Run("localhost:8080")
 }
 
