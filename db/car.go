@@ -1,8 +1,9 @@
 package db
-import(
+
+import (
 	"fmt"
-	
 )
+
 func GetCarsfromDB() ([]*Car, error) {
 	db := DBConnect()
 	cars := make([]*Car, 0)

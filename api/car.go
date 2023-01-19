@@ -1,13 +1,16 @@
-package Modules
-import(
+package api
+
+import (
 	"fmt"
 	"net/http"
+
 	"github.com/Ume-habiba9/Api/db"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 	uuid "github.com/satori/go.uuid"
 )
+
 func GetallCars(c *gin.Context) {
 	database := db.DBConnect()
 	defer database.Close()
@@ -55,6 +58,7 @@ func DeleteCar(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Car deleted!!"})
 }
+
 func UpdateCar(c *gin.Context) {
 	id := c.Param("id")
 	var cardata db.Car
