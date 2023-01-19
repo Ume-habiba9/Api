@@ -1,12 +1,16 @@
-Creating RESTful API with [Go](https://go.dev/) and [Gin](https://gin-gonic.com/)
+## Introducion
+Creating RESTful API with [Go](https://go.dev/) and [Gin](https://gin-gonic.com/) to Read and write data in Database.
+
+Using [Postgresql] (https://www.postgresql.org/) database to handle all the data.
+
+Using [Postman](https://www.postman.com/) to handle all Api requests.
 
 ## Getting Started
 
-First run the development server:
+ Run the development server:
 ```go run ./main.go```
+ 
 
+ Request Url to Send Api request via Postman is "localhost:8080/Cars".
 
- To send Api Requests you need to use [Postman](https://www.postman.com/)
-
- Request Url is (localhost:8080/Cars)
- You can check the Request results in your terminal.
+ Open terminal to check the requests response.
