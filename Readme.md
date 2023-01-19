@@ -5,6 +5,9 @@ Using [Postgresql](https://www.postgresql.org/) database to handle all the data.
 
 Using [Postman](https://www.postman.com/) to handle all Api requests.
 
+Function [DBConnect()] in [db.go](https://github.com/Ume-habiba9/Api/blob/master/db/db.go) connects server with Postgres Database.
+
+
 ## Getting Started
 
  Run the development server:
