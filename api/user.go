@@ -13,7 +13,7 @@ func Postuser(c *gin.Context) {
 	database := db.DBConnect()
 	defer database.Close()
 	id := uuid.NewV4()
-	newUser.ID = id.String()
+	newUser.UserID = id.String()
 	if err := c.BindJSON(&newUser); err != nil {
 		return
 	}
