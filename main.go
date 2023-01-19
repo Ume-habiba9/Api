@@ -140,7 +140,7 @@ func main() {
 	router.DELETE("/Cars/:id", deleteCar)
 	router.PUT("/Cars/:id", updateCar)
 	router.Run("localhost:8080")
-	// data := Getdata()
+	// data := db.Data()
 	// fmt.Println(data)
 }
 

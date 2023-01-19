@@ -2,16 +2,13 @@ module github.com/Ume-habiba9/Api
 
 go 1.19
 
+require github.com/gin-gonic/gin v1.8.2 
+
 require (
-	github.com/gin-gonic/gin v1.8.2
+    github.com/gin-gonic/gin v1.8.2
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.10.7
 	github.com/satori/go.uuid v1.2.0
-)
-
-replace github.com/gin-gonic/gin v1.8.2 => ./github.com/Ume-habiba9/Api
-
-require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
