@@ -1,9 +1,8 @@
-package api
+package Modules
 import(
 	"fmt"
 	"net/http"
 	"github.com/Ume-habiba9/Api/db"
-	"github.com/Ume-habiba9/Api/dbfunc"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -12,7 +11,7 @@ import(
 func GetallCars(c *gin.Context) {
 	database := db.DBConnect()
 	defer database.Close()
-	cars, err := dbfunc.GetCarsfromDB()
+	cars, err := db.GetCarsfromDB()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
@@ -29,7 +28,7 @@ func PostCar(c *gin.Context) {
 	if err := c.BindJSON(&newCar); err != nil {
 		return
 	}
-	err := dbfunc.PostcarinDB(db.Car(newCar))
+	err := db.PostcarinDB(db.Car(newCar))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
@@ -39,7 +38,7 @@ func PostCar(c *gin.Context) {
 
 func GetCar(c *gin.Context) {
 	id := c.Param("id")
-	car, err := dbfunc.GetcarfromDB(id)
+	car, err := db.GetcarfromDB(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
@@ -49,7 +48,7 @@ func GetCar(c *gin.Context) {
 
 func DeleteCar(c *gin.Context) {
 	i := c.Param("id")
-	err := dbfunc.DeletecarfromDB(i)
+	err := db.DeletecarfromDB(i)
 	if err != nil {
 		c.JSON(http.StatusOK, err)
 		return
@@ -64,7 +63,7 @@ func UpdateCar(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	err := dbfunc.UpdatecarinDB(id, db.Car(cardata))
+	err := db.UpdatecarinDB(id, db.Car(cardata))
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, err)
