@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Ume-habiba9/Api/Modules"
 	"github.com/Ume-habiba9/Api/db"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -12,10 +13,10 @@ import (
 
 func main() {
 	router := gin.Default()
-	router.GET("/Cars", getallCars)
-	router.POST("/Cars", postCar)
-	router.GET("/Cars/:id", getCar)
-	router.DELETE("/Cars/:id", deleteCar)
-	router.PUT("/Cars/:id", updateCar)
+	router.GET("/Cars", Modules.GetallCars)
+	router.POST("/Cars", Modules.PostCar)
+	router.GET("/Cars/:id", Modules.GetCar)
+	router.DELETE("/Cars/:id", Modules.DeleteCar)
+	router.PUT("/Cars/:id", Modules.UpdateCar)
 	router.Run("localhost:8080")
 }
