@@ -15,7 +15,13 @@ type Car struct {
 	Price    float64 `json:"price" db:"price"`
 	GasType  string  `json:"gastype" db:"gas_type"`
 }
-
+type User struct {
+	ID       string  `json:"id" db:"user_id"`
+	Username  string  `json:"username" db:"user_name"`
+	Email  string  `json:"email" db:"email"`
+	Password string  `json:"password" db:"passward"`
+	
+}
 func DBConnect() *sqlx.DB {
 	db, err := sqlx.Connect("postgres", "user=postgres password=cactus1470 host=localhost port=5432 dbname=carrental sslmode=disable")
 	if err != nil {
