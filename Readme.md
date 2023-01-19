@@ -1,7 +1,7 @@
 ## Introducion
 Creating RESTful API with [Go](https://go.dev/) and [Gin](https://gin-gonic.com/) to Read and write data in Database.
 
-Using [Postgresql] (https://www.postgresql.org/) database to handle all the data.
+Using [Postgresql](https://www.postgresql.org/) database to handle all the data.
 
 Using [Postman](https://www.postman.com/) to handle all Api requests.
 
