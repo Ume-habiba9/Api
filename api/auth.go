@@ -8,7 +8,6 @@ import (
 	
 )
 func LogIn(c *gin.Context) {
-id := c.Param("id")
 email := c.Param("email")
 passward := c.Param("passward")
 var logInDetails db.User
@@ -16,7 +15,7 @@ if err := c.ShouldBindJSON(&logInDetails); err != nil {
 	c.JSON(http.StatusInternalServerError, "Invalid User Data")
 	return
 }
-_, err := db.LogInCheck(id, email, passward)
+_, err := db.LogInCheck(email, passward)
 if err != nil {
 	c.JSON(http.StatusInternalServerError, err)
 	return
