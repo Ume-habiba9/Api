@@ -18,6 +18,6 @@ func main() {
 	router.DELETE("/Users/:id", api.DeleteUser)
 	router.PUT("/Cars/:id", api.UpdateCar)
 	router.PUT("/Users/:id", api.UpdateUser)
-	router.POST("/Users/:id/:email/:passward", api.LogInCheck)
+	router.POST("/Users/:id/:email/:passward", api.LogIn)
 	router.Run("localhost:8080")
 }

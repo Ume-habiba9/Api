@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func LogIn(id, email, passward string) ([]*User, error) {
+func LogInCheck(id, email, passward string) ([]*User, error) {
 	database := DBConnect()
 	defer database.Close()
 	user := make([]*User, 0)

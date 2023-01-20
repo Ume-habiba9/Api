@@ -10,7 +10,7 @@ import (
 	_ "github.com/lib/pq"
 	
 )
-func LogInCheck(c *gin.Context) {
+func LogIn(c *gin.Context) {
 id := c.Param("id")
 email := c.Param("email")
 passward := c.Param("passward")
@@ -19,7 +19,7 @@ if err := c.ShouldBindJSON(&logindetails); err != nil {
 	c.JSON(http.StatusInternalServerError, "Invalid User Data")
 	return
 }
-_, err := db.LogIn(id, email, passward)
+_, err := db.LogInCheck(id, email, passward)
 if err != nil {
 	c.JSON(http.StatusInternalServerError, err)
 	return
