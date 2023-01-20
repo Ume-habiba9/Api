@@ -1,13 +1,16 @@
 package api
+
 import (
+	"fmt"
 	"net/http"
-     "fmt"
+
 	"github.com/Ume-habiba9/Api/db"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 	uuid "github.com/satori/go.uuid"
 )
+
 func Postuser(c *gin.Context) {
 	var newUser db.User
 	database := db.DBConnect()
@@ -17,7 +20,7 @@ func Postuser(c *gin.Context) {
 	if err := c.BindJSON(&newUser); err != nil {
 		return
 	}
-	err := db.Postuserindb(db.User(newUser))
+	err := db.PostUserinDB(db.User(newUser))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
@@ -27,7 +30,7 @@ func Postuser(c *gin.Context) {
 func Getallusers(c *gin.Context) {
 	database := db.DBConnect()
 	defer database.Close()
-	users, err := db.Getusersfromdb()
+	users, err := db.GetUsersfromDB()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
@@ -36,7 +39,7 @@ func Getallusers(c *gin.Context) {
 }
 func GetUser(c *gin.Context) {
 	id := c.Param("id")
-	user, err := db.Getuserfromdb(id)
+	user, err := db.GetUserfromDB(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
@@ -45,7 +48,7 @@ func GetUser(c *gin.Context) {
 }
 func DeleteUser(c *gin.Context) {
 	i := c.Param("id")
-	err := db.Deleteuserfromdb(i)
+	err := db.DeleteUserfromDB(i)
 	if err != nil {
 		c.JSON(http.StatusOK, err)
 		return
@@ -60,10 +63,12 @@ func UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	err := db.Updateuserindb(id, db.User(userdata))
+	err := db.UpdateUserinDB(id, db.User(userdata))
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, err)
 	}
 	c.IndentedJSON(http.StatusOK, "Updated Successfully")
 }
+
+
