@@ -2,12 +2,14 @@ package main
 
 import (
 	"github.com/Ume-habiba9/Api/api"
+	"github.com/Ume-habiba9/Api/middleware"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
 func main() {
 	router := gin.Default()
+	router.Use(middleware.authMiddleware())
 	router.GET("/Cars", api.GetallCars)
 	router.GET("/Users", api.Getallusers)
 	router.POST("/Cars", api.PostCar)
