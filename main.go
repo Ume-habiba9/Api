@@ -9,7 +9,7 @@ import (
 
 func main() {
 	router := gin.Default()
-	router.Use(middleware.authMiddleware())
+	router.Use(middleware.AuthMiddleware())
 	router.GET("/Cars", api.GetallCars)
 	router.GET("/Users", api.Getallusers)
 	router.POST("/Cars", api.PostCar)

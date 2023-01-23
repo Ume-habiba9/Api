@@ -5,7 +5,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func authMiddleware() gin.HandlerFunc {
+func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		header := c.GetHeader("Secret")
 		if header != "CapregSoft" {
