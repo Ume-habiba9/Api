@@ -27,10 +27,10 @@ func LogIn(c *gin.Context) {
 		c.JSON(http.StatusOK, "Invalid Data")
 	} else {
 		c.JSON(http.StatusOK, "User Exists")
-		fmt.Println(middleware.GenerateJWT(email, passward))
-		token, err := middleware.GenerateJWT(email, passward)
+		fmt.Println(middleware.GenerateJWT(logInDetails.Email))
+		token, err := middleware.GenerateJWT(logInDetails.Email)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"Token": token})

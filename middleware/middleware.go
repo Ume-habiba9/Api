@@ -13,7 +13,6 @@ var jwtkey = []byte("CapregSoft")
 
 type customClaim struct {
 	Email    string `json:"email"`
-	Passward string `json:"passward" `
 	jwt.StandardClaims
 }
 
@@ -32,11 +31,10 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
-func GenerateJWT(email string, passward string) (tokenString string, err error) {
-	expirationTime := time.Now().Add(48 * time.Hour)
+func GenerateJWT(email string) (tokenString string, err error) {
+	expirationTime := time.Now().Add( 1* time.Hour)
 	claims := &customClaim{
 		Email:    email,
-		Passward: passward,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
