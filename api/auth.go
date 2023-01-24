@@ -1,9 +1,11 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Ume-habiba9/Api/db"
+	"github.com/Ume-habiba9/Api/middleware"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -25,5 +27,12 @@ func LogIn(c *gin.Context) {
 		c.JSON(http.StatusOK, "Invalid Data")
 	} else {
 		c.JSON(http.StatusOK, "User Exists")
+		fmt.Println(middleware.GenerateJWT(email, passward))
+		token, err := middleware.GenerateJWT(email, passward)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err)
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"Token": token})
 	}
 }
