@@ -27,7 +27,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 		err := ValidateToken(tokenString)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, "InValid Token")
+			return
 		}
 		c.Next()
 	}
