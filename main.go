@@ -21,6 +21,6 @@ func main() {
 	router.DELETE("/Users/:id", api.DeleteUser)
 	router.PUT("/Cars/:id", api.UpdateCar)
 	router.Use(middleware.AuthMiddleware())
-	router.POST("/Users", api.LogIn)
+	router.POST("/login", api.LogIn)
 	router.Run("localhost:8080")
 }

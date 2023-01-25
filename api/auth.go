@@ -18,13 +18,11 @@ func LogIn(c *gin.Context) {
 	}
 	userdata, err := db.LogInCheck(logInDetails.Email, logInDetails.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		fmt.Print(err)
+		c.JSON(http.StatusUnauthorized, "please check your username or password.")
 		return
 	}
-	if (logInDetails.Email != userdata.Email) || (logInDetails.Password != userdata.Password) {
-		c.JSON(http.StatusOK, "Invalid Data")
-	} else {
-		c.JSON(http.StatusOK, "User Exists")
+	if userdata != nil {
 		fmt.Println(middleware.GenerateJWT(logInDetails.Email))
 		token, err := middleware.GenerateJWT(logInDetails.Email)
 		if err != nil {
@@ -35,5 +33,7 @@ func LogIn(c *gin.Context) {
 		if _, err := fmt.Println(middleware.ValidateToken(token)); err != nil {
 			return
 		}
+	} else {
+		c.JSON(http.StatusOK, "Invalid Data")
 	}
 }

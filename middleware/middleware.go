@@ -37,6 +37,7 @@ func GenerateJWT(email string) (tokenString string, err error) {
 	expirationTime := time.Now().Add(1 * time.Hour)
 	claims := &customClaim{
 		Email: email,
+
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
