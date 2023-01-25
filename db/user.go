@@ -1,7 +1,9 @@
 package db
+
 import (
 	"fmt"
 )
+
 func PostUserinDB(user User) error {
 	database := DBConnect()
 	defer database.Close()

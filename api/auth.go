@@ -11,19 +11,17 @@ import (
 )
 
 func LogIn(c *gin.Context) {
-	email := c.Param("email")
-	passward := c.Param("passward")
 	var logInDetails db.User
 	if err := c.ShouldBindJSON(&logInDetails); err != nil {
 		c.JSON(http.StatusInternalServerError, "Invalid User Data")
 		return
 	}
-	_, err := db.LogInCheck(email, passward)
+	userdata, err := db.LogInCheck(logInDetails.Email, logInDetails.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	if (logInDetails.Email != email) || (logInDetails.Password != passward) {
+	if (logInDetails.Email != userdata.Email) || (logInDetails.Password != userdata.Password) {
 		c.JSON(http.StatusOK, "Invalid Data")
 	} else {
 		c.JSON(http.StatusOK, "User Exists")
@@ -37,6 +35,5 @@ func LogIn(c *gin.Context) {
 		if _, err := fmt.Println(middleware.ValidateToken(token)); err != nil {
 			return
 		}
-
 	}
 }
