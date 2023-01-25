@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 var jwtkey = []byte("CapregSoft")
 
 type customClaim struct {
-	Email    string `json:"email"`
+	Email string `json:"email"`
 	jwt.StandardClaims
 }
 
@@ -29,12 +30,13 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 		c.Next()
+
 	}
 }
 func GenerateJWT(email string) (tokenString string, err error) {
-	expirationTime := time.Now().Add( 1* time.Hour)
+	expirationTime := time.Now().Add(1 * time.Hour)
 	claims := &customClaim{
-		Email:    email,
+		Email: email,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
@@ -43,6 +45,7 @@ func GenerateJWT(email string) (tokenString string, err error) {
 	tokenString, err = token.SignedString(jwtkey)
 	return
 }
+
 func ValidateToken(signedToken string) error {
 	token, err := jwt.ParseWithClaims(signedToken, &customClaim{},
 		func(token *jwt.Token) (interface{}, error) {
@@ -51,11 +54,12 @@ func ValidateToken(signedToken string) error {
 	if err != nil {
 		return err
 	}
-	claims, ok := token.Claims.(*customClaim)
-	if !ok {
-		return err
-	}
-	if claims.ExpiresAt < time.Now().Local().Unix() {
+	if claims, ok := token.Claims.(*customClaim); ok && token.Valid {
+		fmt.Println("Signature is Valid")
+		if claims.ExpiresAt < time.Now().Local().Unix() {
+			return err
+		}
+	} else {
 		return err
 	}
 	return nil

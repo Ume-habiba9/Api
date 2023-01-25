@@ -30,9 +30,13 @@ func LogIn(c *gin.Context) {
 		fmt.Println(middleware.GenerateJWT(logInDetails.Email))
 		token, err := middleware.GenerateJWT(logInDetails.Email)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"Token": token})
+		if _, err := fmt.Println(middleware.ValidateToken(token)); err != nil {
+			return
+		}
+
 	}
 }
