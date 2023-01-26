@@ -30,10 +30,9 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 		c.Next()
-
 	}
 }
-func GenerateJWT(email string) (tokenString string, err error) {
+func GenerateJWT(email string) (string, string, error) {
 	expirationTime := time.Now().Add(1 * time.Hour)
 	claims := &customClaim{
 		Email: email,
@@ -42,9 +41,24 @@ func GenerateJWT(email string) (tokenString string, err error) {
 			ExpiresAt: expirationTime.Unix(),
 		},
 	}
+	refreshExpirationTime := expirationTime.Add(148 * time.Hour)
+	refreshClaims := &customClaim{
+		Email: email,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: refreshExpirationTime.Unix(),
+		},
+	}
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
+	refreshTokenString, err := refreshToken.SignedString(jwtkey)
+	if err != nil {
+		return "", "", err
+	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err = token.SignedString(jwtkey)
-	return
+	tokenString, err := token.SignedString(jwtkey)
+	if err != nil {
+		return "", "", err
+	}
+	return tokenString, refreshTokenString, nil
 }
 
 func ValidateToken(signedToken string) error {
@@ -58,10 +72,13 @@ func ValidateToken(signedToken string) error {
 	if claims, ok := token.Claims.(*customClaim); ok && token.Valid {
 		fmt.Println("Signature is Valid")
 		if claims.ExpiresAt < time.Now().Local().Unix() {
-			return err
+			_, err := jwt.Parse(signedToken, func(t *jwt.Token) (interface{}, error) {
+				return []byte(jwtkey), nil
+			})
+			if err != nil {
+				return err
+			}
 		}
-	} else {
-		return err
 	}
 	return nil
 }
