@@ -19,12 +19,13 @@ func LogIn(c *gin.Context) {
 	userdata, err := db.LogInCheck(logInDetails.Email, logInDetails.Password)
 	if err != nil {
 		fmt.Print(err)
-		c.JSON(http.StatusUnauthorized, "please check your username or password.")
+		c.JSON(http.StatusUnauthorized, "please check your email or password.")
 		return
 	}
 	if userdata != nil {
 		fmt.Println(middleware.GenerateJWT(logInDetails.Email))
 		token, refreshToken, err := middleware.GenerateJWT(logInDetails.Email)
+		fmt.Println()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -35,5 +36,17 @@ func LogIn(c *gin.Context) {
 		}
 	} else {
 		c.JSON(http.StatusOK, "Invalid Data")
+	}
+}
+func RefreshToken(c *gin.Context) {
+	var token string
+	// token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhhYmliYUBnbWFpbC5jb20iLCJleHAiOjE2NzUzMzY4NTB9.3q0R4xDJ50JYXl4wjXX6C1DSV3aIEomG53qy7AW2_1E"
+	refreshed, err := middleware.RefreshJWT(token)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		fmt.Println(err)
+	} else {
+		c.JSON(http.StatusAccepted, gin.H{"Token Created": refreshed})
+		fmt.Println(refreshed)
 	}
 }

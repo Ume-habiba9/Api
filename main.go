@@ -11,7 +11,7 @@ import (
 func main() {
 	router := gin.Default()
 	router.GET("/Cars", api.GetallCars)
-	router.POST("/Users", api.Postuser)
+	router.POST("/signup", api.Postuser)
 	router.GET("/Cars/:id", api.GetCar)
 	router.PUT("/Users/:id", api.UpdateUser)
 	router.GET("/Users", api.Getallusers)
@@ -22,5 +22,6 @@ func main() {
 	router.PUT("/Cars/:id", api.UpdateCar)
 	router.Use(middleware.AuthMiddleware())
 	router.POST("/login", api.LogIn)
+	router.POST("/refreshtoken", api.RefreshToken)
 	router.Run("localhost:8080")
 }

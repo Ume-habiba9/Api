@@ -36,15 +36,18 @@ func GenerateJWT(email string) (string, string, error) {
 	expirationTime := time.Now().Add(1 * time.Hour)
 	claims := &customClaim{
 		Email: email,
-
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
 	}
-	refreshToken := jwt.New(jwt.SigningMethodHS256)
-	refreshclaims := refreshToken.Claims.(jwt.MapClaims)
-	refreshclaims["refreshExpirationTime"] = expirationTime.Add(148 * time.Hour).Unix()
-	refreshclaims["email"] = claims.Email
+	refreshExpirationTime := expirationTime.Add(148 * time.Hour)
+	refreshClaims := &customClaim{
+		Email: email,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: refreshExpirationTime.Unix(),
+		},
+	}
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
 	refreshTokenString, err := refreshToken.SignedString(jwtkey)
 	if err != nil {
 		return "", "", err
@@ -65,24 +68,29 @@ func ValidateToken(signedToken string) error {
 	if err != nil {
 		return err
 	}
-	if claims, ok := token.Claims.(*customClaim); ok && token.Valid {
+	if _, ok := token.Claims.(*customClaim); ok && token.Valid {
 		fmt.Println("Signature is Valid")
-		if claims.ExpiresAt < time.Now().Local().Unix() {
-			return err
-		}
-		refreshToken, err := jwt.Parse(signedToken, func(t *jwt.Token) (interface{}, error) {
-			return []byte(jwtkey), nil
-		})
 		if err != nil {
 			return err
 		}
-		if refreshclaims, ok := refreshToken.Claims.(jwt.MapClaims); ok && refreshToken.Valid {
-			if (refreshclaims["email"]) != claims.Email {
-				return err
-			}
-		}
-
-		// fmt.Println("token", refreshToken)
 	}
 	return nil
+}
+func RefreshJWT(tokenString string) (string, error) {
+	refreshToken, err := jwt.ParseWithClaims(tokenString, &customClaim{}, func(t *jwt.Token) (interface{}, error) {
+		return []byte(jwtkey), nil
+	})
+	if err != nil {
+		return " ", err
+	}
+	if refreshClaims, ok := refreshToken.Claims.(*customClaim); ok && refreshToken.Valid {
+		token, _, err := GenerateJWT(refreshClaims.Email)
+		fmt.Println("New Token Generated:", token)
+		if err != nil {
+			return "", err
+		}
+		return token, nil
+	}
+	// fmt.Println(refreshToken)
+	return "", nil
 }
