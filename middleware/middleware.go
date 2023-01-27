@@ -13,7 +13,8 @@ import (
 var jwtkey = []byte("CapregSoft")
 
 type customClaim struct {
-	Email string `json:"email"`
+	UserID string `json:"userid"`
+	Email  string `json:"email"`
 	jwt.StandardClaims
 }
 
@@ -27,22 +28,26 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 		err := ValidateToken(tokenString)
 		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"Error": "Unauthorized"})
+			c.Abort()
 			return
 		}
 		c.Next()
 	}
 }
-func GenerateJWT(email string) (string, string, error) {
+func GenerateJWT(userid, email string) (string, string, error) {
 	expirationTime := time.Now().Add(1 * time.Hour)
 	claims := &customClaim{
-		Email: email,
+		UserID: userid,
+		Email:  email,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
 	}
 	refreshExpirationTime := expirationTime.Add(148 * time.Hour)
 	refreshClaims := &customClaim{
-		Email: email,
+		UserID: userid,
+		Email:  email,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: refreshExpirationTime.Unix(),
 		},
@@ -76,21 +81,19 @@ func ValidateToken(signedToken string) error {
 	}
 	return nil
 }
-func RefreshJWT(tokenString string) (string, error) {
+func ReGenerateJWT(tokenString string) (string, error) {
 	refreshToken, err := jwt.ParseWithClaims(tokenString, &customClaim{}, func(t *jwt.Token) (interface{}, error) {
 		return []byte(jwtkey), nil
 	})
 	if err != nil {
-		return " ", err
+		return "", err
 	}
 	if refreshClaims, ok := refreshToken.Claims.(*customClaim); ok && refreshToken.Valid {
-		token, _, err := GenerateJWT(refreshClaims.Email)
-		fmt.Println("New Token Generated:", token)
+		token, _, err := GenerateJWT(refreshClaims.UserID, refreshClaims.Email)
 		if err != nil {
 			return "", err
 		}
 		return token, nil
 	}
-	// fmt.Println(refreshToken)
 	return "", nil
 }
