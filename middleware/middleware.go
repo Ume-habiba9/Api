@@ -33,6 +33,18 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 		c.Next()
+		token, err := jwt.ParseWithClaims(tokenString, &customClaim{}, func(t *jwt.Token) (interface{}, error) {
+			return []byte(jwtkey), nil
+		})
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, "Unauthorized")
+		}
+		if claims, ok := token.Claims.(*customClaim); ok && token.Valid {
+			userID := claims.UserID
+			c.Set("UserID", userID)
+			fmt.Println(userID)
+			c.Next()
+		}
 	}
 }
 func GenerateJWT(userid, email string) (string, string, error) {
