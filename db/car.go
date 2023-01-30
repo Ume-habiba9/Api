@@ -7,7 +7,7 @@ import (
 func GetCarsfromDB() ([]*Car, error) {
 	db := DBConnect()
 	cars := make([]*Car, 0)
-	err := db.Select(&cars, `SELECT car_id, car_name, car_type, capacity,price,gas_type FROM carrental.cars`)
+	err := db.Select(&cars, `SELECT car_id, car_name, car_type, capacity,price,gas_type,steering FROM carrental.cars`)
 	if err != nil {
 		return nil, err
 	}
@@ -17,7 +17,7 @@ func PostcarinDB(car Car) error {
 	database := DBConnect()
 	defer database.Close()
 	fmt.Println(car)
-	query := `INSERT INTO carrental.cars (car_id,user_id, car_name, car_type, capacity,price,gas_type) VALUES (:car_id,:user_id, :car_name, :car_type, :capacity,:price,:gas_type)`
+	query := `INSERT INTO carrental.cars (car_id,user_id, car_name, car_type, capacity,price,gas_type,steering) VALUES (:car_id,:user_id, :car_name, :car_type, :capacity,:price,:gas_type,:steering)`
 	_, err := database.NamedExec(query, car)
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func GetcarfromDB(id string) ([]*Car, error) {
 	database := DBConnect()
 	defer database.Close()
 	car := make([]*Car, 0)
-	query := `SELECT car_id, car_name, car_type, capacity,price,gas_type FROM carrental.cars WHERE car_id= $1`
+	query := `SELECT car_id, car_name, car_type, capacity,price,gas_type,steering FROM carrental.cars WHERE car_id= $1`
 	err := database.Select(&car, query, id)
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func DeletecarfromDB(id string) error {
 func UpdatecarinDB(id string, cardata Car) error {
 	database := DBConnect()
 	defer database.Close()
-	query := `UPDATE carrental.cars SET car_id=:car_id,car_name=:car_name,car_type=:car_type,capacity=:capacity,price=:price,gas_type=:gas_type WHERE car_id=$1`
+	query := `UPDATE carrental.cars SET car_id=:car_id,car_name=:car_name,car_type=:car_type,capacity=:capacity,price=:price,gas_type=:gas_type, steering=:steering WHERE car_id=$1`
 	_, err := database.NamedExec(query, cardata)
 	if err != nil {
 		return err

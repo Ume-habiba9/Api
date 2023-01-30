@@ -15,6 +15,7 @@ type Car struct {
 	Capacity string  `json:"capacity" db:"capacity"`
 	Price    float64 `json:"price" db:"price"`
 	GasType  string  `json:"gastype" db:"gas_type"`
+	Steering string  `json:"steering" db:"steering"`
 }
 type User struct {
 	UserID   string `json:"userid" db:"user_id"`
