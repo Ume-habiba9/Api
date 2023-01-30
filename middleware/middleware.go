@@ -26,25 +26,22 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		err := ValidateToken(tokenString)
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"Error": "Unauthorized"})
-			c.Abort()
-			return
-		}
 		c.Next()
 		token, err := jwt.ParseWithClaims(tokenString, &customClaim{}, func(t *jwt.Token) (interface{}, error) {
 			return []byte(jwtkey), nil
 		})
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, "Unauthorized")
+			c.Abort()
+			return
 		}
 		if claims, ok := token.Claims.(*customClaim); ok && token.Valid {
 			userID := claims.UserID
 			c.Set("UserID", userID)
 			fmt.Println(userID)
-			c.Next()
+			return
 		}
+		c.Next()
 	}
 }
 func GenerateJWT(userid, email string) (string, string, error) {
@@ -77,22 +74,6 @@ func GenerateJWT(userid, email string) (string, string, error) {
 	return tokenString, refreshTokenString, nil
 }
 
-func ValidateToken(signedToken string) error {
-	token, err := jwt.ParseWithClaims(signedToken, &customClaim{},
-		func(token *jwt.Token) (interface{}, error) {
-			return []byte(jwtkey), nil
-		})
-	if err != nil {
-		return err
-	}
-	if _, ok := token.Claims.(*customClaim); ok && token.Valid {
-		fmt.Println("Signature is Valid")
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
 func ReGenerateJWT(tokenString string) (string, error) {
 	refreshToken, err := jwt.ParseWithClaims(tokenString, &customClaim{}, func(t *jwt.Token) (interface{}, error) {
 		return []byte(jwtkey), nil

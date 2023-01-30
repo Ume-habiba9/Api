@@ -29,9 +29,6 @@ func LogIn(c *gin.Context) {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"Token": token, "Refresh Token": refreshToken})
-		if _, err := fmt.Println(middleware.ValidateToken(token)); err != nil {
-			return
-		}
 	} else {
 		c.JSON(http.StatusOK, "Invalid Data")
 	}
