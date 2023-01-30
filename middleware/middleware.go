@@ -26,7 +26,6 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		c.Next()
 		token, err := jwt.ParseWithClaims(tokenString, &customClaim{}, func(t *jwt.Token) (interface{}, error) {
 			return []byte(jwtkey), nil
 		})
@@ -37,8 +36,11 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 		if claims, ok := token.Claims.(*customClaim); ok && token.Valid {
 			userID := claims.UserID
-			c.Set("UserID", userID)
-			fmt.Println(userID)
+			c.Set("userid", userID)
+			fmt.Println("User id is", userID)
+		} else {
+			c.JSON(http.StatusUnauthorized, "UserID not found!")
+			c.Abort()
 			return
 		}
 		c.Next()

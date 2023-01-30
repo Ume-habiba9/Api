@@ -28,6 +28,11 @@ func PostCar(c *gin.Context) {
 	defer database.Close()
 	id := uuid.NewV4()
 	newCar.ID = id.String()
+	if userID, ok := c.Get("userid"); ok {
+		newCar.UserID = userID.(string)
+	} else {
+		c.JSON(http.StatusInternalServerError, "User id not found")
+	}
 	if err := c.BindJSON(&newCar); err != nil {
 		return
 	}

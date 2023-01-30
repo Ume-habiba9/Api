@@ -9,6 +9,7 @@ import (
 
 type Car struct {
 	ID       string  `json:"id" db:"car_id"`
+	UserID   string  `json:"userid" db:"user_id"`
 	CarName  string  `json:"carname" db:"car_name"`
 	CarType  string  `json:"cartype" db:"car_type"`
 	Capacity string  `json:"capacity" db:"capacity"`

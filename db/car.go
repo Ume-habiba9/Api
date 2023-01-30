@@ -17,7 +17,7 @@ func PostcarinDB(car Car) error {
 	database := DBConnect()
 	defer database.Close()
 	fmt.Println(car)
-	query := `INSERT INTO carrental.cars (car_id, car_name, car_type, capacity,price,gas_type) VALUES (:car_id, :car_name, :car_type, :capacity,:price,:gas_type)`
+	query := `INSERT INTO carrental.cars (car_id,user_id, car_name, car_type, capacity,price,gas_type) VALUES (:car_id,:user_id, :car_name, :car_type, :capacity,:price,:gas_type)`
 	_, err := database.NamedExec(query, car)
 	if err != nil {
 		return err
