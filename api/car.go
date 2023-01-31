@@ -15,7 +15,6 @@ func GetallCars(c *gin.Context) {
 	database := db.DBConnect()
 	defer database.Close()
 	userID, _ := c.Get("userid")
-	fmt.Println("Id from c", userID)
 	cars, err := db.GetCarsfromDB(userID.(string))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
@@ -30,11 +29,8 @@ func PostCar(c *gin.Context) {
 	defer database.Close()
 	id := uuid.NewV4()
 	newCar.ID = id.String()
-	if userID, ok := c.Get("userid"); ok {
-		newCar.UserID = userID.(string)
-	} else {
-		c.JSON(http.StatusInternalServerError, "User id not found")
-	}
+	userID, _ := c.Get("userid")
+	newCar.UserID = userID.(string)
 	if err := c.BindJSON(&newCar); err != nil {
 		return
 	}
@@ -52,8 +48,7 @@ func GetCar(c *gin.Context) {
 	fmt.Println("user in get cars", userid)
 	car, err := db.GetcarfromDB(id, userid.(string))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
-		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.IndentedJSON(http.StatusOK, car)
@@ -64,7 +59,7 @@ func DeleteCar(c *gin.Context) {
 	userid, _ := c.Get("userid")
 	err := db.DeletecarfromDB(i, userid.(string))
 	if err != nil {
-		c.JSON(http.StatusOK, err)
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Car deleted!!"})
@@ -77,8 +72,7 @@ func UpdateCar(c *gin.Context) {
 	userID, _ := c.Get("userid")
 	cardata.UserID = userID.(string)
 	if err := c.ShouldBindJSON(&cardata); err != nil {
-		fmt.Println("errr ", err)
-		c.JSON(http.StatusInternalServerError, err)
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	} else {
 		c.IndentedJSON(http.StatusOK, "Updated Successfully")

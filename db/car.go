@@ -1,9 +1,5 @@
 package db
 
-import (
-	"fmt"
-)
-
 func GetCarsfromDB(userID string) ([]*Car, error) {
 	db := DBConnect()
 	cars := make([]*Car, 0)
@@ -16,7 +12,6 @@ func GetCarsfromDB(userID string) ([]*Car, error) {
 func PostcarinDB(car Car) error {
 	database := DBConnect()
 	defer database.Close()
-	fmt.Println(car)
 	query := `INSERT INTO carrental.cars (car_id,user_id, car_name, car_type, capacity,price,gas_type,steering) VALUES (:car_id,:user_id, :car_name, :car_type, :capacity,:price,:gas_type,:steering)`
 	_, err := database.NamedExec(query, car)
 	if err != nil {
@@ -43,7 +38,6 @@ func DeletecarfromDB(id, userid string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Car Deleted")
 	return nil
 }
 func UpdatecarinDB(id, userid string, cardata Car) error {
