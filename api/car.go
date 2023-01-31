@@ -46,9 +46,12 @@ func PostCar(c *gin.Context) {
 
 func GetCar(c *gin.Context) {
 	id := c.Param("id")
-	car, err := db.GetcarfromDB(id)
+	userid, _ := c.Get("userid")
+	fmt.Println("user in get cars", userid)
+	car, err := db.GetcarfromDB(id, userid.(string))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
+		fmt.Println(err)
 		return
 	}
 	c.IndentedJSON(http.StatusOK, car)
@@ -56,7 +59,8 @@ func GetCar(c *gin.Context) {
 
 func DeleteCar(c *gin.Context) {
 	i := c.Param("id")
-	err := db.DeletecarfromDB(i)
+	userid, _ := c.Get("userid")
+	err := db.DeletecarfromDB(i, userid.(string))
 	if err != nil {
 		c.JSON(http.StatusOK, err)
 		return
@@ -67,15 +71,21 @@ func DeleteCar(c *gin.Context) {
 func UpdateCar(c *gin.Context) {
 	id := c.Param("id")
 	var cardata db.Car
+	cardata.ID = id
+	userID, _ := c.Get("userid")
+	cardata.UserID = userID.(string)
 	if err := c.ShouldBindJSON(&cardata); err != nil {
 		fmt.Println("errr ", err)
 		c.JSON(http.StatusInternalServerError, err)
 		return
+	} else {
+		c.IndentedJSON(http.StatusOK, "Updated Successfully")
 	}
-	err := db.UpdatecarinDB(id, db.Car(cardata))
+	err := db.UpdatecarinDB(id, userID.(string), db.Car(cardata))
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusUnauthorized, "Unauthorized")
 	}
-	c.IndentedJSON(http.StatusOK, "Updated Successfully")
 }
