@@ -87,7 +87,7 @@ func DeleteCar(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Car deleted!!"})
+		// c.JSON(http.StatusOK, gin.H{"message": "Car deleted!!"})
 	}
 	if role == 2 {
 		err := db.DeleteCarbyAdmin(i)
@@ -95,8 +95,10 @@ func DeleteCar(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Car deleted!!"})
+		// c.JSON(http.StatusOK, gin.H{"message": "Car deleted!!"})
 	}
+	c.JSON(http.StatusOK, gin.H{"message": "Car deleted!!"})
+
 }
 
 func UpdateCar(c *gin.Context) {
@@ -106,13 +108,15 @@ func UpdateCar(c *gin.Context) {
 	userID, _ := c.Get("userid")
 	role, _ := c.Get("role")
 	cardata.UserID = userID.(string)
-	if err := c.ShouldBindJSON(&cardata); err != nil {
+	err := c.ShouldBindJSON(&cardata)
+	c.JSON(http.StatusAccepted, "Updated Successfully")
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	if role == 1 {
 		err := db.UpdatecarinDB(id, userID.(string), db.Car(cardata))
-		c.JSON(http.StatusAccepted, "Updated Successfully")
+		// c.JSON(http.StatusAccepted, "Updated Successfully")
 		if err != nil {
 			fmt.Println(err)
 			c.JSON(http.StatusInternalServerError, err)
@@ -120,7 +124,7 @@ func UpdateCar(c *gin.Context) {
 	}
 	if role == 2 {
 		err := db.UpdateCarbyAdmin(id, db.Car(cardata))
-		c.JSON(http.StatusAccepted, "Updated Successfully")
+		// c.JSON(http.StatusAccepted, "Updated Successfully")
 		if err != nil {
 			fmt.Println(err)
 			c.JSON(http.StatusInternalServerError, err)

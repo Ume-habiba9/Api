@@ -1,9 +1,16 @@
 package db
 
-func GetCarsfromDB(userID string) ([]*Car, error) {
+import "github.com/gin-gonic/gin"
+
+func GetCarsfromDB(userID string, c gin.Context) ([]*Car, error) {
 	db := DBConnect()
 	cars := make([]*Car, 0)
-	err := db.Select(&cars, `SELECT car_id,user_id, car_name, car_type, capacity,price,gas_type FROM carrental.cars WHERE user_id = $1`, userID)
+	query := `SELECT car_id,user_id, car_name, car_type, capacity,price,gas_type FROM carrental.cars`
+	role, _ := c.Get("role")
+	if role= {
+		
+	}
+	err := db.Select(&cars, userID)
 	if err != nil {
 		return nil, err
 	}
