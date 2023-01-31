@@ -14,9 +14,11 @@ import (
 func GetallCars(c *gin.Context) {
 	database := db.DBConnect()
 	defer database.Close()
-	cars, err := db.GetCarsfromDB()
+	userID, _ := c.Get("userid")
+	fmt.Println("Id from c", userID)
+	cars, err := db.GetCarsfromDB(userID.(string))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.IndentedJSON(http.StatusOK, cars)
@@ -85,7 +87,5 @@ func UpdateCar(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, err)
-	} else {
-		c.JSON(http.StatusUnauthorized, "Unauthorized")
 	}
 }

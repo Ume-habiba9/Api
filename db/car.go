@@ -4,10 +4,10 @@ import (
 	"fmt"
 )
 
-func GetCarsfromDB() ([]*Car, error) {
+func GetCarsfromDB(userID string) ([]*Car, error) {
 	db := DBConnect()
 	cars := make([]*Car, 0)
-	err := db.Select(&cars, `SELECT car_id, car_name, car_type, capacity,price,gas_type,steering FROM carrental.cars`)
+	err := db.Select(&cars, `SELECT car_id,user_id, car_name, car_type, capacity,price,gas_type FROM carrental.cars WHERE user_id = $1`, userID)
 	if err != nil {
 		return nil, err
 	}
