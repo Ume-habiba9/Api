@@ -17,6 +17,7 @@ func Postuser(c *gin.Context) {
 	defer database.Close()
 	id := uuid.NewV4()
 	newUser.UserID = id.String()
+	newUser.Role = 1
 	if err := c.BindJSON(&newUser); err != nil {
 		return
 	}
@@ -70,5 +71,3 @@ func UpdateUser(c *gin.Context) {
 	}
 	c.IndentedJSON(http.StatusOK, "Updated Successfully")
 }
-
-

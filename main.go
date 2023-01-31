@@ -19,6 +19,7 @@ func main() {
 	router.DELETE("/Cars/:id", middleware.AuthMiddleware(), api.DeleteCar)
 	router.DELETE("/Users/:id", middleware.AuthMiddleware(), api.DeleteUser)
 	router.PUT("/Cars/:id", middleware.AuthMiddleware(), api.UpdateCar)
+	router.POST("/signup/admin", api.PostAdmin)
 	router.POST("/signup", api.Postuser)
 	router.POST("/login", api.LogIn)
 	router.POST("/refreshtoken", api.RefreshToken)

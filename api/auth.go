@@ -22,7 +22,7 @@ func LogIn(c *gin.Context) {
 		return
 	}
 	if userdata != nil {
-		token, refreshToken, err := middleware.GenerateJWT(logInDetails.UserID, logInDetails.Email)
+		token, refreshToken, err := middleware.GenerateJWT(userdata.UserID, userdata.Email, userdata.Role)
 		fmt.Println()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

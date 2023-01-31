@@ -22,6 +22,7 @@ type User struct {
 	Username string `json:"username" db:"user_name"`
 	Email    string `json:"email" db:"email"`
 	Password string `json:"password" db:"passward"`
+	Role     int    `json:"role" db:"role"`
 }
 
 func DBConnect() *sqlx.DB {

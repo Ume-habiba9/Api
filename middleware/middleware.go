@@ -15,6 +15,7 @@ var jwtkey = []byte("CapregSoft")
 type customClaim struct {
 	UserID string `json:"userid"`
 	Email  string `json:"email"`
+	Role   int    `json:"role"`
 	jwt.StandardClaims
 }
 
@@ -36,7 +37,10 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 		if claims, ok := token.Claims.(*customClaim); ok && token.Valid {
 			userID := claims.UserID
+			role := claims.Role
 			c.Set("userid", userID)
+			c.Set("role", role)
+			fmt.Println("role", role)
 			fmt.Println("User id is", userID)
 		} else {
 			c.JSON(http.StatusUnauthorized, "UserID not found!")
@@ -46,11 +50,12 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
-func GenerateJWT(userid, email string) (string, string, error) {
+func GenerateJWT(userid, email string, role int) (string, string, error) {
 	expirationTime := time.Now().Add(1 * time.Hour)
 	claims := &customClaim{
 		UserID: userid,
 		Email:  email,
+		Role:   role,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
@@ -59,6 +64,7 @@ func GenerateJWT(userid, email string) (string, string, error) {
 	refreshClaims := &customClaim{
 		UserID: userid,
 		Email:  email,
+		Role:   role,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: refreshExpirationTime.Unix(),
 		},
@@ -84,7 +90,7 @@ func ReGenerateJWT(tokenString string) (string, error) {
 		return "", err
 	}
 	if refreshClaims, ok := refreshToken.Claims.(*customClaim); ok && refreshToken.Valid {
-		token, _, err := GenerateJWT(refreshClaims.UserID, refreshClaims.Email)
+		token, _, err := GenerateJWT(refreshClaims.UserID, refreshClaims.Email, refreshClaims.Role)
 		if err != nil {
 			return "", err
 		}

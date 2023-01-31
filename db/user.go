@@ -7,8 +7,7 @@ import (
 func PostUserinDB(user User) error {
 	database := DBConnect()
 	defer database.Close()
-	fmt.Println(user)
-	query := `INSERT INTO carrental.users (user_id, user_name, email, passward) VALUES (:user_id, :user_name, :email, :passward)`
+	query := `INSERT INTO carrental.users (user_id, user_name, email, passward,role) VALUES (:user_id, :user_name, :email, :passward,:role)`
 	_, err := database.NamedExec(query, user)
 	if err != nil {
 		return err
