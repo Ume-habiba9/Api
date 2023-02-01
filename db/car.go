@@ -1,18 +1,28 @@
 package db
 
-import "github.com/gin-gonic/gin"
+import (
+	"fmt"
 
-func GetCarsfromDB(userID string, c gin.Context) ([]*Car, error) {
+	"github.com/Ume-habiba9/Api/constants"
+	"github.com/gin-gonic/gin"
+)
+
+func GetCarsfromDB(userID string, c *gin.Context) ([]*Car, error) {
 	db := DBConnect()
 	cars := make([]*Car, 0)
 	query := `SELECT car_id,user_id, car_name, car_type, capacity,price,gas_type FROM carrental.cars`
 	role, _ := c.Get("role")
-	if role= {
-		
-	}
-	err := db.Select(&cars, userID)
-	if err != nil {
-		return nil, err
+	fmt.Println("Role in db", role)
+	if role == constants.ROLE_USER {
+		err := db.Select(&cars, query+" WHERE user_id=$1", userID)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		err := db.Select(&cars, query)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return cars, nil
 }
@@ -26,34 +36,60 @@ func PostcarinDB(car Car) error {
 	}
 	return nil
 }
-func GetcarfromDB(id, userid string) ([]*Car, error) {
+func GetcarfromDB(id, userid string, c *gin.Context) ([]*Car, error) {
 	database := DBConnect()
 	defer database.Close()
 	car := make([]*Car, 0)
-	query := `SELECT car_id,user_id, car_name, car_type, capacity,price,gas_type,steering FROM carrental.cars WHERE car_id= $1 AND user_id = $2`
-	err := database.Select(&car, query, id, userid)
-	if err != nil {
-		return nil, err
+	query := `SELECT car_id,user_id, car_name, car_type, capacity,price,gas_type,steering FROM carrental.cars WHERE car_id= $1`
+	role, _ := c.Get("role")
+	fmt.Println("ROLE IN GET CAR", role)
+	if role == constants.ROLE_USER {
+		err := database.Select(&car, query+"  AND user_id = $", id, userid)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		err := database.Select(&car, query, id)
+		if err != nil {
+			return nil, err
+		}
+
 	}
 	return car, nil
 }
-func DeletecarfromDB(id, userid string) error {
+func DeletecarfromDB(id, userid string, c *gin.Context) error {
 	database := DBConnect()
 	defer database.Close()
-	query := `DELETE FROM carrental.cars WHERE car_id=$1 AND user_id = $2`
-	_, err := database.Exec(query, id, userid)
-	if err != nil {
-		return err
+	query := `DELETE FROM carrental.cars WHERE car_id=$1`
+	role, _ := c.Get("role")
+	if role == constants.ROLE_USER {
+		_, err := database.Exec(query+"  AND user_id = $2", id, userid)
+		if err != nil {
+			return err
+		}
+	} else {
+		_, err := database.Exec(query, id)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
-func UpdatecarinDB(id, userid string, cardata Car) error {
+func UpdatecarinDB(id, userid string, cardata Car, c *gin.Context) error {
 	database := DBConnect()
 	defer database.Close()
-	query := `UPDATE carrental.cars SET car_id=:car_id,user_id=:user_id, car_name=:car_name,car_type=:car_type,capacity=:capacity,price=:price,gas_type=:gas_type, steering=:steering WHERE car_id=$1 AND user_id=$2`
-	_, err := database.NamedExec(query, cardata)
-	if err != nil {
-		return err
+	role, _ := c.Get("role")
+	query := `UPDATE carrental.cars SET car_id=:car_id,user_id=:user_id, car_name=:car_name,car_type=:car_type,capacity=:capacity,price=:price,gas_type=:gas_type, steering=:steering WHERE car_id=$1`
+	if role == constants.ROLE_USER {
+		_, err := database.NamedExec(query+" AND user_id=$2", cardata)
+		if err != nil {
+			return err
+		}
+	} else {
+		_, err := database.NamedExec(query, cardata)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
